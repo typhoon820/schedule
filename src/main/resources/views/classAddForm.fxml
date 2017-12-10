@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="500.0" prefWidth="300.0" style="-fx-background-color: ALICEBLUE;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.university.schedule.controller.ClassAddController">
+    <children>
+        <VBox prefHeight="600.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <AnchorPane prefHeight="49.0" prefWidth="300.0" style="-fx-background-color: #cacaff;">
+                    <children>
+                        <Label prefHeight="66.0" prefWidth="300.0" text="Введите данные о новом предмете в расписании" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="16.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </AnchorPane>
+            <JFXComboBox fx:id="groupsComboBox" onAction="#selectGroup" prefHeight="26.0" prefWidth="296.0" promptText="Группа">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+               </VBox.margin>
+            </JFXComboBox>
+            <JFXDatePicker fx:id="datePicker" onAction="#selectDate" prefHeight="24.0" prefWidth="282.0" promptText="Дата">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+               </VBox.margin>
+            </JFXDatePicker>
+                <JFXComboBox fx:id="timeComboBox" labelFloat="true" onAction="#selectTime" prefHeight="26.0" prefWidth="367.0" promptText="Время" stylesheets="@/css/combobox.css">
+                    <VBox.margin>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+                    </VBox.margin>
+                </JFXComboBox>
+                <JFXTextField fx:id="roomTextField" labelFloat="true" promptText="Аудитория">
+                    <VBox.margin>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+                    </VBox.margin>
+               <font>
+                  <Font size="12.0" />
+               </font>
+                </JFXTextField>
+                <JFXComboBox fx:id="subjectComboBox" labelFloat="true" onAction="#selectSubject" prefHeight="26.0" prefWidth="435.0" promptText="Предмет" stylesheets="@/css/combobox.css">
+                    <VBox.margin>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+                    </VBox.margin>
+                </JFXComboBox>
+                <JFXComboBox fx:id="teacherComboBox" labelFloat="true" onAction="#selectTeacher" prefHeight="26.0" prefWidth="380.0" promptText="Преподаватель" stylesheets="@/css/combobox.css">
+                    <VBox.margin>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+                    </VBox.margin>
+                </JFXComboBox>
+                <JFXButton onAction="#addNewClass" prefHeight="32.0" prefWidth="256.0" stylesheets="@/css/button.css" text="Добавить">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets left="50.0" right="50.0" top="10.0" />
+                    </VBox.margin>
+                </JFXButton>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

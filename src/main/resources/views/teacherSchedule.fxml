@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="550.0" prefWidth="920.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.university.schedule.controller.TeacherScheduleController">
+   <children>
+      <VBox prefHeight="550.0" prefWidth="920.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox prefHeight="54.0" prefWidth="920.0" style="-fx-background-color: ALICEBLUE;">
+               <children>
+                  <Label text="Расписание на">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
+                     </HBox.margin>
+                  </Label>
+                  <JFXDatePicker fx:id="calendar" onAction="#updateTable" prefHeight="29.0" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="15.0" />
+                     </HBox.margin>
+                     <padding>
+                        <Insets bottom="5.0" />
+                     </padding>
+                  </JFXDatePicker>
+                  <JFXButton onAction="#loadAll" prefHeight="45.0" prefWidth="62.0" stylesheets="@/css/button.css" text="Все">
+                     <HBox.margin>
+                        <Insets bottom="5.0" top="10.0" />
+                     </HBox.margin>
+                  </JFXButton>
+                  <Label text="Преподаватель:">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="20.0" right="10.0" top="20.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label fx:id="teacherNameLabel" text="ФИО">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="10.0" top="20.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <TableView fx:id="scheduleTable" prefHeight="522.0" prefWidth="920.0">
+              <columns>
+                <TableColumn fx:id="subjectCol" prefWidth="230.0" text="Subject" />
+                <TableColumn fx:id="groupCol" prefWidth="230.0" text="Group №" />
+                  <TableColumn fx:id="roomCol" prefWidth="230.0" text="Room №" />
+                  <TableColumn fx:id="startTimeCol" prefWidth="230.0" text="Start time" />
+              </columns>
+            </TableView>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

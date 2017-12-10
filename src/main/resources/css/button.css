@@ -1,0 +1,10 @@
+.jfx-button {
+    -fx-background-color: #316c72;
+    -fx-text-fill: ALICEBLUE;
+}
+
+.jfx-button:hover {
+    -fx-background-color: #cacaff;
+    -fx-text-fill: black;
+    -fx-font-smoothing-type: gray;
+}
