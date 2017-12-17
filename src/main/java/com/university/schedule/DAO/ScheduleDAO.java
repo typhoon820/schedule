@@ -16,4 +16,5 @@ public interface ScheduleDAO {
     List<Schedule> findByTime(int idLesson);
     List<Schedule> findByGroupMonth(Groups group, String monthYear);
     Integer saveWithId(Schedule schedule);
+    void update(Schedule schedule);
 }

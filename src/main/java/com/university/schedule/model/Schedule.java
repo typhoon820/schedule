@@ -91,12 +91,13 @@ public class Schedule {
         Schedule schedule = (Schedule) o;
 
         if (id != schedule.id) return false;
-        if (groupNumber != null ? !groupNumber.equals(schedule.groupNumber) : schedule.groupNumber != null)
-            return false;
-        if (startTime != null ? !startTime.equals(schedule.startTime) : schedule.startTime != null) return false;
-        if (room != null ? !room.equals(schedule.room) : schedule.room != null) return false;
-
-        return true;
+        if (!groupNumber.equals(schedule.groupNumber)) return false;
+        if (!startTime.equals(schedule.startTime)) return false;
+        if (!room.equals(schedule.room)) return false;
+        if (!subjectTeacherBySubjectTeacherId.equals(schedule.subjectTeacherBySubjectTeacherId)) return false;
+        if (!timetableId.equals(schedule.timetableId)) return false;
+        if (subj != null ? !subj.equals(schedule.subj) : schedule.subj != null) return false;
+        return tchr != null ? tchr.equals(schedule.tchr) : schedule.tchr == null;
     }
 
     @Override
@@ -130,5 +131,16 @@ public class Schedule {
     @Transient
     public StringProperty startTimeProperty(){
         return new SimpleStringProperty(startTime.toString());
+    }
+
+    public Schedule copy(){
+        Schedule temp = new Schedule();
+        temp.setId(this.getId());
+        temp.setGroupNumber(this.getGroupNumber());
+        temp.setSubjectTeacherBySubjectTeacherId(this.getSubjectTeacherBySubjectTeacherId());
+        temp.setTimetableId(this.getTimetableId());
+        temp.setRoom(this.getRoom());
+        temp.setStartTime(this.getStartTime());
+        return temp;
     }
 }

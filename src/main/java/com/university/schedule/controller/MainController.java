@@ -4,10 +4,15 @@ import com.jfoenix.controls.JFXButton;
 import com.university.schedule.DAO.CycleDAO;
 import com.university.schedule.DAO.ScheduleDAO;
 import com.university.schedule.Utils.CustomTableCell;
+import com.university.schedule.Utils.CycleStats;
 import com.university.schedule.Utils.TeacherNameTransfer;
+import com.university.schedule.Utils.alerts.ConfirmAlert;
+import com.university.schedule.Utils.alerts.SuccessAlert;
 import com.university.schedule.Utils.alerts.WarningAlert;
+import com.university.schedule.Utils.alerts.newClassDialog;
 import com.university.schedule.model.*;
 import com.university.schedule.observers.Observer;
+import com.university.schedule.service.DepartmentService;
 import com.university.schedule.service.GroupService;
 import com.university.schedule.service.ScheduleService;
 import com.university.schedule.service.TeacherService;
@@ -31,10 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -131,7 +133,11 @@ public class MainController extends AbstractController implements Initializable,
     @FXML
     private ComboBox<String> scheduleYearComboBox;
 
+    @FXML
+    private JFXButton editScheduleButton;
 
+    @FXML
+    private JFXButton deleteScheduleButton;
 
 
     @Autowired
@@ -163,18 +169,20 @@ public class MainController extends AbstractController implements Initializable,
         editTeacherButton.setDisable(true);
         deleteTeacherButton.setDisable(true);
         teacherScheduleButton.setDisable(true);
+        ControllerTransfer.getInstance().setController(this);
 
     }
 
-    private void initMonthYears(){
+
+    private void initMonthYears() {
         ObservableList<String> months = FXCollections.observableArrayList();
-        ObservableList<String> years =  FXCollections.observableArrayList();
-        for (int i =0; i< 12; i++){
-            if (i<9)
-                months.add('0'+String.valueOf(i+1));
+        ObservableList<String> years = FXCollections.observableArrayList();
+        for (int i = 0; i < 12; i++) {
+            if (i < 9)
+                months.add('0' + String.valueOf(i + 1));
             else
-                months.add(String.valueOf(i+1));
-            years.add(String.valueOf(2006+i));
+                months.add(String.valueOf(i + 1));
+            years.add(String.valueOf(2006 + i));
         }
         monthComboBox.setItems(months);
         yearComboBox.setItems(years);
@@ -182,7 +190,8 @@ public class MainController extends AbstractController implements Initializable,
         scheduleYearComboBox.setItems(years);
 
     }
-    private void initGroups(){
+
+    private void initGroups() {
         Groups empty = new Groups();
         empty.setGroupNo("Все");
         ObservableList<Groups> groups = FXCollections.observableArrayList();
@@ -233,37 +242,63 @@ public class MainController extends AbstractController implements Initializable,
     }
 
 
-
     @FXML
     void addClass(ActionEvent event) {
         stageManager.showStage("../views/classAddForm.fxml", false, "Добавить предмет в расписание");
     }
 
+    @Autowired
+    DepartmentService departmentService;
+
     @FXML
     void addDepartment(ActionEvent event) {
-        Map<Cycle, Integer> res = scheduleService.countSubjects(groupComboBox.getSelectionModel().getSelectedItem());
-        System.out.println();
-    }
+        Optional<Department> res = showDialog(new newClassDialog()).showAndWait();
+        if (res.isPresent()) {
+            if (res.get().getName().trim().isEmpty() || res.get().getName().length() < 3) {
+                showAlert(new WarningAlert("Неверный формат ввода")).showAndWait();
+                addDepartment(event);
+                return;
+            }
+            if(!res.get().getName().trim().matches(".*[a-zа-я].*")){
+                showAlert(new WarningAlert("Должна быть хотя бы одна буква")).showAndWait();
+                addDepartment(event);
+                return;
 
+            }
+            if (departmentService.findByName(res.get().getName()) == null) {
+                departmentService.save(res.get());
+                showAlert(new SuccessAlert("Факультет успешно добавлен")).showAndWait();
+            } else {
+                showAlert(new WarningAlert("Такой факультет уже существует")).showAndWait();
+            }
+        }
+    }
 
 
     @FXML
     void addSubject(ActionEvent event) {
-        scheduleService.findByTeacher(TeacherNameTransfer.getInstance().getTchr());
+
+        stageManager.showStage("../views/subjectAddForm.fxml", false, "Новый предмет");
     }
 
     @FXML
     void addTeacher(ActionEvent event) {
         //((Stage)(addDptBtn.getScene().getWindow())).close();
-        stageManager.showStage("../views/teacherAddForm.fxml", false,"New teacher");
+        stageManager.showStage("../views/teacherAddForm.fxml", false, "New teacher");
     }
 
     @FXML
-    void loadScheduleTable(Event event) { loadData();
+    void loadScheduleTable(Event event) {
+        groupComboBox.getSelectionModel().select(null);
+        scheduleMonthComboBox.getSelectionModel().select(null);
+        scheduleYearComboBox.getSelectionModel().select(null);
+        loadData();
     }
 
     @FXML
     void loadTeachersTable(Event event) {
+        monthComboBox.getSelectionModel().select(null);
+        yearComboBox.getSelectionModel().select(null);
         loadTeacherData();
     }
 
@@ -299,15 +334,15 @@ public class MainController extends AbstractController implements Initializable,
         stageManager.showStage("../views/editTeacher.fxml", false, "Редактировать преодавателя");
 
     }
+
     @FXML
     void showGroupSchedule(ActionEvent event) {
         Groups selected = groupComboBox.getSelectionModel().getSelectedItem();
-        if(selected.getGroupNo().equals("Все")){
+        if (selected.getGroupNo().equals("Все")) {
             loadData();
-        }
-        else{
+        } else {
             scheduleTable.getItems().clear();
-            List<Schedule> temp =  scheduleList.stream().filter(s->s.getGroupNumber().equals(selected.getGroupNo())).collect(Collectors.toList());
+            List<Schedule> temp = scheduleList.stream().filter(s -> s.getGroupNumber().equals(selected.getGroupNo())).collect(Collectors.toList());
             scheduleTable.getItems().setAll(temp);
         }
     }
@@ -324,11 +359,10 @@ public class MainController extends AbstractController implements Initializable,
     void findFree(ActionEvent event) {
         String month = monthComboBox.getSelectionModel().getSelectedItem();
         String year = yearComboBox.getSelectionModel().getSelectedItem();
-        if(!(month.isEmpty() || year.isEmpty())){
-            List<Teacher> foundTeachers = teacherService.findFree(month +"-"+year);
+        if (!(month.isEmpty() || year.isEmpty())) {
+            List<Teacher> foundTeachers = teacherService.findFree(month + "-" + year);
             teachersTable.getItems().setAll(foundTeachers);
-        }
-        else {
+        } else {
             showAlert(new WarningAlert("Не указана дата"));
         }
     }
@@ -336,7 +370,11 @@ public class MainController extends AbstractController implements Initializable,
     @FXML
     void showStats(ActionEvent event) {
         groups = groupComboBox.getSelectionModel().getSelectedItem();
-        stageManager.showStage("../views/stats.fxml",false,"Статистика");
+        if (groups != null && !groups.getGroupNo().equals("Все")) {
+            stageManager.showStage("../views/stats.fxml", false, "Статистика");
+        } else {
+            showAlert(new WarningAlert("Выберите группу")).showAndWait();
+        }
     }
 
     @FXML
@@ -348,19 +386,79 @@ public class MainController extends AbstractController implements Initializable,
     void findByYear(ActionEvent event) {
 
     }
+
     @FXML
     void findSchedule(ActionEvent event) {
         List<Schedule> found = new ArrayList<>();
         String month = scheduleMonthComboBox.getSelectionModel().getSelectedItem();
         String year = scheduleYearComboBox.getSelectionModel().getSelectedItem();
-        if(groupComboBox.getSelectionModel().getSelectedItem() != null){
-            found = scheduleService.findByGroupMonth(groupComboBox.getSelectionModel().getSelectedItem(),
-                    month+"-"+year);
-            scheduleTable.getItems().setAll(found);
+        if (groupComboBox.getSelectionModel().getSelectedItem() != null) {
+            if (groupComboBox.getSelectionModel().getSelectedItem().getGroupNo().equals("Все")) {
+                showAlert(new WarningAlert("Выберете группу")).showAndWait();
+            } else {
+                found = scheduleService.findByGroupMonth(groupComboBox.getSelectionModel().getSelectedItem(),
+                        month + "-" + year);
+                scheduleTable.getItems().setAll(found);
+            }
         }
+
+
     }
+
     @FXML
     void assignTeacher(ActionEvent event) {
         stageManager.showStage("../views/assignSubject.fxml", false, "Назначить преподавателя");
+    }
+
+
+    @FXML
+    void editSchedule(ActionEvent event) {
+        scheduleTransfer = scheduleTable.getSelectionModel().getSelectedItem();
+        stageManager.showStage("../views/editClass.fxml", false, "Редактировать занятие");
+    }
+
+    @FXML
+    void deleteSchedule(ActionEvent event) {
+        boolean deleted = false;
+        Schedule selectedSchedule = scheduleTable.getSelectionModel().getSelectedItem();
+        Cycle cycle = selectedSchedule.getSubjectTeacherBySubjectTeacherId().getSubjectBySubjectId().getCycleByCycleId();
+        Optional<Groups> group = groupService
+                .findAll()
+                .stream()
+                .filter(g -> g.getGroupNo().equals(selectedSchedule.getGroupNumber()))
+                .findFirst();
+        Map<Cycle, Integer> cycleCount = scheduleService.countSubjects(group.get());
+        cycleCount.put(cycle, cycleCount.get(cycle) - 1);
+        List<CycleStats> cycleStats = new ArrayList<>();
+        int sum = 0;
+        for (Map.Entry<Cycle, Integer> entry : cycleCount.entrySet()) {
+            sum += entry.getValue();
+        }
+
+        for (Map.Entry<Cycle, Integer> entry : cycleCount.entrySet()) {
+            cycleStats.add(new CycleStats(entry.getKey(), entry.getValue(), new Double(entry.getValue()) / sum * 100));
+        }
+        for (CycleStats cs : cycleStats) {
+            if (cs.getPercent() > 70) {
+                Optional<ButtonType> res = showAlert(new ConfirmAlert("Если вы удалите даный предмет из расписания, то" +
+                        " процент одного из циклов обучения превысит 70%")).showAndWait();
+                if (res.get() == ButtonType.OK) {
+                    scheduleService.delete(selectedSchedule.getId());
+                    deleted = true;
+                    break;
+                } else {
+                    return;
+                }
+            }
+        }
+        if (!deleted) {
+            deleted = true;
+            scheduleService.delete(selectedSchedule.getId());
+        }
+
+        if (deleted)
+            showAlert(new SuccessAlert("Предмет успешно удален")).showAndWait();
+
+
     }
 }

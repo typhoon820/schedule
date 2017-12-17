@@ -34,10 +34,12 @@
                                 </columns>
                               </TableView>
                               <ComboBox fx:id="groupComboBox" layoutX="11.0" layoutY="4.0" onAction="#showGroupSchedule" prefWidth="150.0" promptText="Группа" />
-                              <JFXButton fx:id="stats" layoutX="473.0" layoutY="4.0" onAction="#showStats" stylesheets="@/css/button.css" text="Статистика" />
+                              <JFXButton fx:id="stats" layoutX="622.0" layoutY="4.0" onAction="#showStats" stylesheets="@/css/button.css" text="Статистика" />
                               <ComboBox fx:id="scheduleMonthComboBox" layoutX="170.0" layoutY="4.0" onAction="#findByMonth" prefHeight="26.0" prefWidth="75.0" promptText="мес" />
                               <ComboBox fx:id="scheduleYearComboBox" layoutX="250.0" layoutY="4.0" onAction="#findByYear" prefHeight="26.0" prefWidth="103.0" promptText="год" />
-                              <JFXButton fx:id="findButton" layoutX="360.0" layoutY="4.0" onAction="#findSchedule" prefHeight="26.0" prefWidth="75.0" stylesheets="@/css/button.css" text="Найти" />
+                              <JFXButton fx:id="findButton" layoutX="360.0" layoutY="4.0" onAction="#findSchedule" prefHeight="26.0" prefWidth="62.0" stylesheets="@/css/button.css" text="Найти" />
+                              <JFXButton fx:id="editScheduleButton" layoutX="435.0" layoutY="4.0" onAction="#editSchedule" prefHeight="26.0" prefWidth="95.0" stylesheets="@/css/button.css" text="Изменить" />
+                              <JFXButton fx:id="deleteScheduleButton" layoutX="540.0" layoutY="4.0" onAction="#deleteSchedule" prefHeight="26.0" prefWidth="75.0" stylesheets="@/css/button.css" text="Удалить" />
                            </children>
                         </AnchorPane>
                   </content>

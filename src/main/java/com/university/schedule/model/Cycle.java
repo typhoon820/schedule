@@ -58,4 +58,10 @@ public class Cycle {
     public void setSubjectsById(Collection<Subject> subjectsById) {
         this.subjectsById = subjectsById;
     }
+
+    @Override
+    public String toString(){
+        return name;
+    }
+
 }

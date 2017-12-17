@@ -22,4 +22,5 @@ public interface ScheduleService {
     Map<Cycle, Integer> countSubjects(Groups group);
     List<Schedule> findByGroupMonth(Groups group, String monthYear);
     Integer saveWithId(Schedule schedule);
+    void update(Schedule schedule);
 }

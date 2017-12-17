@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 import java.util.ResourceBundle;
 
 @Component
-public class TeacherAddController extends AbstractController implements Initializable, Observable{
+public class TeacherAddController extends AbstractController implements Initializable, Observable {
 
 
     private static final ObservableList<String> DGR = FXCollections.observableArrayList("профессор", "доцент", "Магистр");
@@ -72,10 +72,10 @@ public class TeacherAddController extends AbstractController implements Initiali
         departmentComboBox.getItems().setAll(departmentService.findAll());
         positionComboBox.getItems().setAll(positionService.findAll());
         departmentComboBox.setCellFactory(cell -> new CustomComboboxCell<>());
-        positionComboBox.setCellFactory(cell-> new CustomComboboxCell<>());
+        positionComboBox.setCellFactory(cell -> new CustomComboboxCell<>());
     }
 
-    private void clearFields(){
+    private void clearFields() {
         fioTextField.setText("");
         addressTextField.setText(null);
         phoneTextField.setText("");
@@ -86,13 +86,38 @@ public class TeacherAddController extends AbstractController implements Initiali
 
     @FXML
     void addNewTeacher(ActionEvent event) {
+        String s = fioTextField.getText().trim();
+
+        if (fioTextField.getText().trim().isEmpty()
+                || addressTextField.getText().trim().isEmpty()
+                || phoneTextField.getText().trim().isEmpty()
+                || positionComboBox.getValue() == null
+                || departmentComboBox.getValue() == null
+                || degreeComboBox.getValue() == null){
+            showAlert(new WarningAlert("необходимо заполнить все поля")).showAndWait();
+            return;
+        }
+        if(!fioTextField.getText().trim().matches(".*[a-zа-я].*")){
+            showAlert(new WarningAlert("Должна быть хотя бы одна буква")).showAndWait();
+            return;
+        }
+        if(phoneTextField.getText().length() < 6 && phoneTextField.getText().length() > 9){
+            showAlert(new WarningAlert("Неверный формат телефона")).showAndWait();
+            return;
+        }
+        try{
+            Integer.valueOf(phoneTextField.getText());
+        }
+        catch (NumberFormatException e){
+            showAlert(new WarningAlert("Неверный формат номера телефона")).showAndWait();
+            return;
+        }
 
         Teacher teacher = new Teacher();
-
         teacher.setFio(fioTextField.getText());
         teacher.setAdress(addressTextField.getText());
         Teacher t = teacherService.findByName(fioTextField.getText());
-        if (t != null && t.getPhone().equals(phoneTextField.getText())){
+        if (t != null && t.getPhone().equals(phoneTextField.getText())) {
             Alert al = showAlert(new WarningAlert("Такой преподаватель уже есть, попробуйте снова."));
             if (al.showAndWait().get() == ButtonType.OK) {
                 clearFields();
@@ -104,9 +129,9 @@ public class TeacherAddController extends AbstractController implements Initiali
         teacher.setDepartmentByDepartmentId(departmentComboBox.getValue());
         teacher.setPositionByPositionId(positionComboBox.getValue());
 
-        for(Teacher teach: departmentComboBox.getValue().getTeachersById()){
-            if(teach.getPositionByPositionId().getPosition().equals("Заведующий кафедрой")){
-                if (teacher.getPositionByPositionId().equals(teach.getPositionByPositionId())){
+        for (Teacher teach : departmentComboBox.getValue().getTeachersById()) {
+            if (teach.getPositionByPositionId().getPosition().equals("Заведующий кафедрой")) {
+                if (teacher.getPositionByPositionId().equals(teach.getPositionByPositionId())) {
                     showAlert(new WarningAlert("На кафедре уже есть заведующий")).showAndWait();
                     positionComboBox.setValue(null);
                     return;
@@ -115,7 +140,7 @@ public class TeacherAddController extends AbstractController implements Initiali
         }
 
         teacherService.save(teacher);
-        ((Stage)(fioTextField.getScene().getWindow())).close();
+        ((Stage) (fioTextField.getScene().getWindow())).close();
         notifyObservers();
     }
 
@@ -132,7 +157,7 @@ public class TeacherAddController extends AbstractController implements Initiali
 
     @Override
     public void notifyObservers() {
-        for (Observer o: observers){
+        for (Observer o : observers) {
             o.update();
         }
     }

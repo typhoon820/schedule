@@ -99,4 +99,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     public Integer saveWithId(Schedule schedule) {
         return scheduleDAO.saveWithId(schedule);
     }
+
+    @Override
+    public void update(Schedule schedule) {
+        scheduleDAO.update(schedule);
+    }
 }

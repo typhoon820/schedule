@@ -72,4 +72,9 @@ public class ScheduleDAOImpl extends AbstractDAO<Integer, Schedule> implements S
     public Integer saveWithId(Schedule schedule) {
          return (Integer) getSession().save(schedule);
     }
+
+    @Override
+    public void update(Schedule schedule) {
+        getSession().update(schedule);
+    }
 }

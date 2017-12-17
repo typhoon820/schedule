@@ -19,9 +19,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.events.Event;
 
 import javax.swing.event.ListDataEvent;
 import java.net.URL;
@@ -111,12 +113,34 @@ public class EditTeacherController extends AbstractController implements Initial
         addressTextField.setText(teacher.getAdress());
         phoneTextField.setText(teacher.getPhone());
         degreeComboBox.setValue(teacher.getScientificDegree());
+
         departmentComboBox.setValue(teacher.getDepartmentByDepartmentId());
         positionComboBox.setValue(oldPosition);
     }
 
     @FXML
     void editTeacher(ActionEvent event) {
+
+        if (fioTextField.getText().trim().isEmpty()
+                || addressTextField.getText().trim().isEmpty()
+                || phoneTextField.getText().trim().isEmpty()
+                || positionComboBox.getValue() == null
+                || departmentComboBox.getValue() == null
+                || degreeComboBox.getValue() == null){
+            showAlert(new WarningAlert("необходимо заполнить все поля")).showAndWait();
+            return;
+        }
+        if(phoneTextField.getText().length() < 6 && phoneTextField.getText().length() > 9){
+            showAlert(new WarningAlert("Неверный формат телефона")).showAndWait();
+            return;
+        }
+        try{
+            Integer.valueOf(phoneTextField.getText());
+        }
+        catch (NumberFormatException e){
+            showAlert(new WarningAlert("Неверный формат номера телефона")).showAndWait();
+            return;
+        }
 
         teacher.setFio(fioTextField.getText());
         teacher.setAdress(addressTextField.getText());
@@ -150,7 +174,7 @@ public class EditTeacherController extends AbstractController implements Initial
                 .stream()
                 .filter(i-> i.chosenProperty().get())
                 .forEach(chosen::add);
-        if(!teacher.getScientificDegree().equals("Профессор")){
+        if(!teacher.getScientificDegree().equals("профессор")){
             if(!chosen.stream().filter(Subject::isExam).collect(toList()).isEmpty()){
                 showAlert(new WarningAlert("Данный преподаватель не имеет неободимой ученой степени. " +
                         "Среди выбранных предметов есть те, по которым должен проводиться экзамен.")).showAndWait();
@@ -192,6 +216,9 @@ public class EditTeacherController extends AbstractController implements Initial
         initFields();
         initCols();
         loadData();
+
+        registerObserver((Observer) ControllerTransfer.getInstance().getController());
+
     }
 
     @Override
